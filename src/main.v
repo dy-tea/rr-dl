@@ -37,7 +37,7 @@ fn main() {
 	mut fp := flag.new_flag_parser(os.args)
 
 	fp.application('rr-dl')
-	fp.version('1.0.1')
+	fp.version('1.0.2')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
@@ -261,8 +261,17 @@ fn main() {
 		chapter_content = chapter_content.trim_space().trim_string_right('            </div>')
 
 		// Deletions FIXME
-		replace_class := resp_chapter.find_between(r'<style>', r'display: none;').trim_space()#[1..-1]
-		replace_class_start := chapter_content.index('<p class="${replace_class}">') or { panic(err) }
+		mut replace_class := ''
+		for j, line in resp_chapter.split_into_lines() {
+			if line.contains('display: none;' ) {
+				replace_class = resp_chapter.split_into_lines()[j - 1].find_between('.', '{')
+				break
+			}
+		}
+		replace_class_start := chapter_content.index('<p class="${replace_class}">') or {
+			print(replace_class)
+			panic(err)
+		}
 		replace_class_end := chapter_content.index_after('</p>', replace_class_start)
 		replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
 		chapter_content = chapter_content.replace(replace_class_str, '')
