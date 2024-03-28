@@ -258,7 +258,7 @@ fn main() {
 
 		mut chapter_content := resp_chapter.find_between(r'<div class="chapter-inner chapter-content">', r'<div class="portlet light t-center')
 
-		chapter_content = chapter_content.trim_space().trim_string_right('            </div>')
+		chapter_content = chapter_content.trim_space().trim_string_right('</div>')
 
 		// Deletions FIXME
 		mut replace_class := ''
