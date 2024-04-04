@@ -117,7 +117,8 @@ fn main() {
 
 	selected_fiction_title_index := selected_fiction_title_index_str.int()
 	if !(0 <= selected_fiction_title_index && selected_fiction_title_index <= fiction_titles.len - 1) {
-		panic(term.fail_message('ERROR: No fictions found'))
+		println(term.fail_message('ERROR: No fictions found'))
+		exit(1)
 	}
 
 	// Keep selection in seperate variables for convenience
@@ -260,22 +261,24 @@ fn main() {
 
 		chapter_content = chapter_content.trim_space().trim_string_right('</div>')
 
-		// Deletions FIXME
+		// Remove copy protection
 		mut replace_class := ''
 		for j, line in resp_chapter.split_into_lines() {
-			if line.contains('display: none;' ) {
+			if line.contains('display: none;') {
 				replace_class = resp_chapter.split_into_lines()[j - 1].find_between('.', '{')
 				break
 			}
 		}
 		replace_class_start := chapter_content.index('<p class="${replace_class}">') or {
-			print(replace_class)
-			panic(err)
+			println(term.fail_message('ERROR: Class "' + replace_class + '" not found'))
+			exit(2)
 		}
 		replace_class_end := chapter_content.index_after('</p>', replace_class_start)
 		replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
 		chapter_content = chapter_content.replace(replace_class_str, '')
+		chapter_content = chapter_content.replace('</p></p>', '</p>')
 
+		// Add title to chapter
 		if is_add_title {
 			chapter_content = '# ${chapter_titles[i]}\n' + chapter_content
 		}
