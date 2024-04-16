@@ -18,6 +18,8 @@ const (
 	color_5    = 0xa8c082
 )
 
+// Find all unicodes in input string that are in the format \u0000
+// Returns in the fomrat 0000
 fn get_unicodes(input string) ([]string) {
 	mut unicodes := []string{}
 
@@ -36,11 +38,13 @@ fn get_unicodes(input string) ([]string) {
 fn main() {
 	mut fp := flag.new_flag_parser(os.args)
 
+	// Info
 	fp.application('rr-dl')
-	fp.version('1.0.2')
+	fp.version('1.0.3')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
+	// Flags and arguments
 	is_select_all := fp.bool('all', `a`, false, 'Select all chapters')
 	is_add_title := fp.bool('title', `t`, false, 'Add chapter title to start of file')
 	indexing_start := fp.int('indexing', `I`, 0, 'Index chapters starting from value')
@@ -51,7 +55,10 @@ fn main() {
 	}
 	download_directory := fp.string('directory', `d`, '.', 'Set download location')
 
-	searched_title_args := fp.finalize()!
+	searched_title_args := fp.finalize() or {
+		println(fp.usage())
+		exit(1)
+	}
 	searched_title := if searched_title_args.len == 0 {
 		os.input(term.hex(color_3, 'Enter search title: '))
 	} else {
@@ -178,7 +185,8 @@ fn main() {
 		}
 
 		if chapter_search.len == 0 {
-			panic(term.fail_message('ERROR: No results found'))
+			println(term.fail_message('ERROR: No results found'))
+			exit(1)
 		}
 
 		for i, n in chapter_search {
@@ -240,7 +248,7 @@ fn main() {
 		println(term.hex(color_5, 'Downloading chapters') +
 			term.hex(color_3, ' ${chapter_begin} ') + term.hex(color_5, 'to') +
 			term.hex(color_3, ' ${chapter_end}') + term.hex(color_5, ':'))
-		for i in chapter_begin .. chapter_end + 1 { // + 1 is necessary, as .. is not inclusive
+		for i in chapter_begin .. chapter_end + 1 { // For loops cannot loop inclusively
 			range << i // This is very dumb
 		}
 	}
@@ -257,9 +265,7 @@ fn main() {
 
 		resp_chapter := http.get_text(chapter_link)
 
-		mut chapter_content := resp_chapter.find_between(r'<div class="chapter-inner chapter-content">', r'<div class="portlet light t-center')
-
-		chapter_content = chapter_content.trim_space().trim_string_right('</div>')
+		mut chapter_content := resp_chapter.find_between(r'<div class="chapter-inner chapter-content">', r'<div class="portlet light t-center').trim_space().trim_string_right('</div>')
 
 		// Remove copy protection
 		mut replace_class := ''
@@ -269,14 +275,17 @@ fn main() {
 				break
 			}
 		}
-		replace_class_start := chapter_content.index('<p class="${replace_class}">') or {
-			println(term.fail_message('ERROR: Class "' + replace_class + '" not found'))
-			exit(2)
+
+		for {
+			replace_class_start := chapter_content.index('<p class="${replace_class}">') or {
+				println(term.bg_yellow('WARNING: Class "' + replace_class + '" not found'))
+				break
+			}
+			replace_class_end := chapter_content.index_after('</p>', replace_class_start)
+			replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
+			chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></p>', '</p>')
+			break
 		}
-		replace_class_end := chapter_content.index_after('</p>', replace_class_start)
-		replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
-		chapter_content = chapter_content.replace(replace_class_str, '')
-		chapter_content = chapter_content.replace('</p></p>', '</p>')
 
 		// Add title to chapter
 		if is_add_title {
