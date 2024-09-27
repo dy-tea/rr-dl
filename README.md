@@ -9,7 +9,7 @@ rr-dl 1.0.3
 -----------------------------------------------
 Usage: rr-dl [options] [ARGS]
 
-Description: A cli program for downloading novels from [royalroad.com
+Description: A cli program for downloading novels from royalroad.com
 
 Options:
   -a, --all                 Select all chapters

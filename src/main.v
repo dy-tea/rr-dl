@@ -7,20 +7,18 @@ import regex
 import term
 import time
 
-const (
-	base_url   = 'https://www.royalroad.com'
-	royal_road = ' ___               _   ___              _\n| _ \\___ _  _ __ _| | | _ \\___  __ _ __| |\n|   / _ \\ || / _` | | |   / _ \\/ _` / _` |\n|_|_\\___/\\_, \\__,_|_| |_|_\\___/\\__,_\\__,_|\n       |__/\n'
-	// 1 is brightest, 5 is darkest
-	color_1    = 0xe8ede4
-	color_2    = 0xd9e8cf
-	color_3    = 0xd1e1c6
-	color_4    = 0xbdd3ae
-	color_5    = 0xa8c082
-)
+const base_url = 'https://www.royalroad.com'
+const royal_road = ' ___               _   ___              _\n| _ \\___ _  _ __ _| | | _ \\___  __ _ __| |\n|   / _ \\ || / _` | | |   / _ \\/ _` / _` |\n|_|_\\___/\\_, \\__,_|_| |_|_\\___/\\__,_\\__,_|\n       |__/\n'
+// 1 is brightest, 5 is darkest
+const color_1 = 0xe8ede4
+const color_2 = 0xd9e8cf
+const color_3 = 0xd1e1c6
+const color_4 = 0xbdd3ae
+const color_5 = 0xa8c082
 
 // Find all unicodes in input string that are in the format \u0000
 // Returns in the fomrat 0000
-fn get_unicodes(input string) ([]string) {
+fn get_unicodes(input string) []string {
 	mut unicodes := []string{}
 
 	for i, c in input {
@@ -28,7 +26,7 @@ fn get_unicodes(input string) ([]string) {
 			break
 		}
 		if c == `\\` && input[i + 1] == `u` {
-			unicodes << input[i + 2 .. i + 6]
+			unicodes << input[i + 2..i + 6]
 		}
 	}
 
@@ -103,7 +101,8 @@ fn main() {
 		fiction_titles[i] = fiction_titles[i].find_between('>', '<')
 		unicode_runes := re_unicode_runes.find_all_str(fiction_titles[i])
 		for r in unicode_runes {
-			fiction_titles[i] = fiction_titles[i].replace(r, (rune(('0x' + r[3..r.len - 1]).int())).str()).replace('&quot;', '"') // Replace with encoded version of unicode character
+			fiction_titles[i] = fiction_titles[i].replace(r, (rune(('0x' + r[3..r.len - 1]).int())).str()).replace('&quot;',
+				'"') // Replace with encoded version of unicode character
 		}
 	}
 
@@ -195,8 +194,10 @@ fn main() {
 				term.hex(color_5, ' ${chapter_titles[n]}'))
 		}
 
-		chapter_begin_str := if chapter_search.len == 1 { '0' } else { os.input_opt(term.hex(color_3, '\nSelect start chapter by index / first result: ')) or { '0' } }
-		chapter_begin = if chapter_search.len >= chapter_begin_str.int() && chapter_begin_str.int() >= 0 {
+		chapter_begin_str := if chapter_search.len == 1 { '0' } else { os.input_opt(term.hex(color_3, '\nSelect start chapter by index / first result: ')) or {
+				'0'} }
+		chapter_begin = if chapter_search.len >= chapter_begin_str.int()
+			&& chapter_begin_str.int() >= 0 {
 			chapter_search[chapter_begin_str.int()]
 		} else {
 			panic(term.fail_message('ERROR: Selected chapter out of range'))
@@ -218,16 +219,18 @@ fn main() {
 				term.hex(color_5, ' ${chapter_titles[n]}'))
 		}
 
-		chapter_end_str := if chapter_search_end.len == 1 { '' } else { os.input_opt(term.hex(color_3, '\nSelect end chapter by index / single chapter: ')) or { chapter_begin.str() } }
+		chapter_end_str := if chapter_search_end.len == 1 { '' } else { os.input_opt(term.hex(color_3, '\nSelect end chapter by index / single chapter: ')) or {
+				chapter_begin.str()} }
 		chapter_end = match chapter_search_end.len {
 			0 {
 				panic(term.fail_message('ERROR: No results found'))
 				-1
 			}
-			1 { chapter_search_end[0] }
+			1 {
+				chapter_search_end[0]
+			}
 			else {
-				if chapter_search_end.len <= chapter_end_str.int()
-				&& chapter_end_str.int() >= 0 {
+				if chapter_search_end.len <= chapter_end_str.int() && chapter_end_str.int() >= 0 {
 					chapter_search[chapter_end_str.int()]
 				} else {
 					chapter_begin
@@ -266,13 +269,15 @@ fn main() {
 
 		resp_chapter := http.get_text(chapter_link)
 
-		mut chapter_content := resp_chapter.find_between(r'<div class="chapter-inner chapter-content">', r'<div class="portlet light t-center').trim_space().trim_string_right('</div>')
+		mut chapter_content := resp_chapter.find_between(r'<div class="chapter-inner chapter-content">',
+			r'<div class="portlet light t-center').trim_space().trim_string_right('</div>')
 
 		// Remove copy protection
 		mut replace_class := ''
 		for j, line in resp_chapter.split_into_lines() {
 			if line.contains('display: none;') {
-				replace_class = resp_chapter.split_into_lines()[j - 1].find_between('.', '{')
+				replace_class = resp_chapter.split_into_lines()[j - 1].find_between('.',
+					'{')
 				break
 			}
 		}
@@ -285,7 +290,8 @@ fn main() {
 			}
 			replace_class_end := chapter_content.index_after('</p>', replace_class_start)
 			replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
-			chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></p>', '</p>')
+			chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></p>',
+				'</p>')
 			break
 		}
 
@@ -299,11 +305,13 @@ fn main() {
 		}
 
 		if os.is_writable(download_directory) {
-			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '᜵') + '.' + file_extension, chapter_content) or { panic(err) } // Make sure file is not read as folder
+			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '᜵') + '.' +
+				file_extension, chapter_content) or { panic(err) } // Make sure file is not read as folder
 		} else {
 			panic(term.fail_message('ERROR: Insufficient permissons to write to specified directory'))
 		}
 	}
 	// Print elapsed time during downloade
-	println(term.hex(color_3, '\nFinished download in ') + term.hex(color_1, '${download_timer.elapsed().milliseconds()}') + term.hex(color_3, 'ms'))
+	println(term.hex(color_3, '\nFinished download in ') +
+		term.hex(color_1, '${download_timer.elapsed().milliseconds()}') + term.hex(color_3, 'ms'))
 }
