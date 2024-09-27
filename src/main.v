@@ -40,7 +40,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.0.3')
+	fp.version('1.1.0')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
@@ -54,6 +54,7 @@ fn main() {
 		fp.bool('index', `i`, true, 'Prefix title with chapter index')
 	}
 	download_directory := fp.string('directory', `d`, '.', 'Set download location')
+	file_extension := fp.string('extension', `e`, 'md', 'Change file extension from md')
 
 	searched_title_args := fp.finalize() or {
 		println(fp.usage())
@@ -276,6 +277,7 @@ fn main() {
 			}
 		}
 
+		// Remove invisible class if present (safe goto with breaks?)
 		for {
 			replace_class_start := chapter_content.index('<p class="${replace_class}">') or {
 				println(term.bg_yellow('WARNING: Class "' + replace_class + '" not found'))
@@ -297,7 +299,7 @@ fn main() {
 		}
 
 		if os.is_writable(download_directory) {
-			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '᜵') + '.md', chapter_content) or { panic(err) } // Make sure file is not read as folder
+			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '᜵') + '.' + file_extension, chapter_content) or { panic(err) } // Make sure file is not read as folder
 		} else {
 			panic(term.fail_message('ERROR: Insufficient permissons to write to specified directory'))
 		}
