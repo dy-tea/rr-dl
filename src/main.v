@@ -3,6 +3,7 @@ module main
 import os
 import flag
 import net.http
+import net.urllib
 import regex
 import term
 import time
@@ -38,7 +39,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.1.0')
+	fp.version('1.2.0')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
@@ -301,11 +302,11 @@ fn main() {
 		}
 
 		if i != range.last() { // TODO: maybe make this optional otherwise add linking for obsidian or standard markdown
-			chapter_content += '\n[[${chapter_titles[i + 1]}]]'
+			chapter_content += '\n[${chapter_titles[i + 1].replace('/', '⧸')}](${urllib.path_escape(chapter_titles[i + 1])})'
 		}
 
 		if os.is_writable(download_directory) {
-			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '᜵') + '.' +
+			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '⧸') + '.' +
 				file_extension, chapter_content) or { panic(err) } // Make sure file is not read as folder
 		} else {
 			panic(term.fail_message('ERROR: Insufficient permissons to write to specified directory'))
