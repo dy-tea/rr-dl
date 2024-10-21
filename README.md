@@ -5,7 +5,7 @@ _Royal Road Novel Downloader_
 ## Usage
 
 ```
-rr-dl 1.2.0
+rr-dl 1.2.1
 -----------------------------------------------
 Usage: rr-dl [options] [ARGS]
 

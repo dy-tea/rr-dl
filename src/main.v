@@ -17,6 +17,16 @@ const color_3 = 0xd1e1c6
 const color_4 = 0xbdd3ae
 const color_5 = 0xa8c082
 
+// Custom escape for obsidian
+fn chapter_escape(input string) string {
+	return urllib.path_escape(name_chapter(input)).replace('%2C', ',').replace('%3F', '?')
+}
+
+// Ensure file is not read as folder
+fn name_chapter(input string) string {
+	return input.trim_space_right().replace('/', '⧸')
+}
+
 // Find all unicodes in input string that are in the format \u0000
 // Returns in the fomrat 0000
 fn get_unicodes(input string) []string {
@@ -39,7 +49,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.2.0')
+	fp.version('1.2.1')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
@@ -298,16 +308,16 @@ fn main() {
 
 		// Add title to chapter
 		if is_add_title {
-			chapter_content = '# ${chapter_titles[i]}\n' + chapter_content
+			chapter_content = '# ${name_chapter(chapter_titles[i])}\n' + chapter_content
 		}
 
-		if i != range.last() { // TODO: maybe make this optional otherwise add linking for obsidian or standard markdown
-			chapter_content += '\n[${chapter_titles[i + 1].replace('/', '⧸')}](${urllib.path_escape(chapter_titles[i + 1])})'
+		if i != range.last() {
+			chapter_content += '\n[${name_chapter(chapter_titles[i + 1])}](${chapter_escape(chapter_titles[i + 1])})'
 		}
 
 		if os.is_writable(download_directory) {
-			os.write_file(download_directory + '/' + chapter_titles[i].replace('/', '⧸') + '.' +
-				file_extension, chapter_content) or { panic(err) } // Make sure file is not read as folder
+			os.write_file(download_directory + '/' + name_chapter(chapter_titles[i]) + '.' +
+				file_extension, chapter_content) or { panic(err) }
 		} else {
 			panic(term.fail_message('ERROR: Insufficient permissons to write to specified directory'))
 		}
