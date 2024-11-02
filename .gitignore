@@ -1,6 +1,8 @@
 # Binaries for programs and plugins
 main
-road_cli_v
+build
+rr-dl
+rr-dl_linux_amd64
 *.exe
 *.exe~
 *.so
