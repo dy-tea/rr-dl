@@ -45,3 +45,16 @@ Search for novels titled "test" and prefix chapter titles with index + 10
 ```
 rr-dl -I 10 test
 ```
+
+## Building
+First install [V](https://vlang.io), then run the following commands:
+
+```
+git clone https://github.com/dy-tea/rr-dl.git
+cd rr-dl
+
+# ensure you have added v to PATH using `v symlink`
+v build.vsh
+```
+
+This will build the linux and windows versions.
