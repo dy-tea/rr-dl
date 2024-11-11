@@ -19,7 +19,7 @@ const color_5 = 0xa8c082
 
 // Custom escape for obsidian
 fn chapter_escape(input string) string {
-	return urllib.path_escape(name_chapter(input)).replace('%2C', ',').replace('%3F', '?').replace(':', '：')
+	return urllib.path_escape(name_chapter(input)).replace('%2C', ',').replace('%3F', '?').replace('/', '⧸').replace(':', '：')
 }
 
 // Ensure file is not read as folder
@@ -49,7 +49,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.2.2')
+	fp.version('1.2.3')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
