@@ -19,3 +19,10 @@ mv(name, linux_name) or { println('ERROR: Failed to rename linux build') }
 
 // Build for windows
 sh('v -os windows .')
+
+// Print version
+$if windows {
+  sh('.\\', windows_name + ' --version')
+} $else {
+  sh('./' + linux_name + ' --version')
+}
