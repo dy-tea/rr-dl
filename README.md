@@ -47,14 +47,13 @@ rr-dl -I 10 test
 ```
 
 ## Building
-First install [V](https://vlang.io), then run the following commands:
+First install [V](https://vlang.io), then run the following commands (ensure you have added v to PATH using `v symlink`):
 
 ```
 git clone https://github.com/dy-tea/rr-dl.git
 cd rr-dl
 
-# ensure you have added v to PATH using `v symlink`
-v build.vsh
+v run build.vsh
 ```
 
 This will build the linux and windows versions.
