@@ -3,7 +3,6 @@ module main
 import os
 import flag
 import net.http
-import net.urllib
 import regex
 import term
 import time
@@ -19,12 +18,12 @@ const color_5 = 0xa8c082
 
 // Custom escape for obsidian
 fn chapter_escape(input string) string {
-	return urllib.path_escape(name_chapter(input)).replace('%2C', ',').replace('%3F', '?').replace('/', '⧸').replace(':', '：')
+	return name_chapter(input).replace(' ', '%20')
 }
 
 // Ensure file is not read as folder
 fn name_chapter(input string) string {
-	return input.trim_space_right().replace('/', '⧸').replace(':', '：')
+	return input.trim_space_right().replace('/', '⧸').replace(':', '։')
 }
 
 // Find all unicodes in input string that are in the format \u0000
@@ -49,7 +48,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.2.3')
+	fp.version('1.2.4')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
