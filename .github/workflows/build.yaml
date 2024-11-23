@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install cross-compiler
+        run: sudo apt install gcc-mingw-w64-x86-64
+
+      - name: Install V
+        run: |
+          git clone --depth=1 https://github.com/vlang/v
+          cd v
+          make
+          sudo ./v symlink
+          v up
+
+      - name: Build the project
+        run: v run build.vsh
