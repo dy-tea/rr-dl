@@ -1,0 +1,58 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install cross-compiler
+        run: sudo apt install gcc-mingw-w64-x86-64
+
+      - name: Install V
+        run: |
+          git clone --depth=1 https://github.com/vlang/v
+          cd v
+          make
+          sudo ./v symlink
+          v up
+
+      - name: Build the project
+        run: v run build.vsh
+
+      - name: Generate Release Notes
+        id: generate_release_notes
+        run: |
+          npm install -g release-notes-generator
+          release-notes-generator --tag ${{ github.ref }} --output release_notes.md
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+              $(cat release_notes.md)
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          files: |
+            ./rr-dl_linux_amd64  # Linux
+            ./rr-dl.exe          # Windows
+            release_notes.md
+          env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
