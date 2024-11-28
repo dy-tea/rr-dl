@@ -34,25 +34,14 @@ jobs:
           release-notes-generator --tag ${{ github.ref }} --output release_notes.md
 
       - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-              $(cat release_notes.md)
+          name: ${{ github.ref_name }}
+          body_path: release_notes.md
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
           files: |
             ./rr-dl_linux_amd64  # Linux
             ./rr-dl.exe          # Windows
             release_notes.md
-          env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
