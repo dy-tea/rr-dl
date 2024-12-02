@@ -48,7 +48,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.2.4')
+	fp.version('1.2.5')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
@@ -286,21 +286,20 @@ fn main() {
 		mut replace_class := ''
 		for j, line in resp_chapter.split_into_lines() {
 			if line.contains('display: none;') {
-				replace_class = resp_chapter.split_into_lines()[j - 1].find_between('.',
-					'{')
+				replace_class = resp_chapter.split_into_lines()[j - 1].find_between('.', '{')
 				break
 			}
 		}
 
 		// Remove invisible class if present (safe goto with breaks?)
 		for {
-			replace_class_start := chapter_content.index('<p class="${replace_class}">') or {
+			replace_class_start := chapter_content.index('<div class="${replace_class}">') or {
 				println(term.bg_yellow('WARNING: Class "' + replace_class + '" not found'))
 				break
 			}
-			replace_class_end := chapter_content.index_after('</p>', replace_class_start)
+			replace_class_end := chapter_content.index_after('</div>', replace_class_start)
 			replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
-			chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></p>',
+			chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></div>',
 				'</p>')
 			break
 		}
