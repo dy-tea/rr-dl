@@ -14,11 +14,11 @@ rm(linux_name) or {}
 rm(windows_name) or {}
 
 // Build for linux
-sh('v -os linux .')
+sh('v -os linux -prod .')
 mv(name, linux_name) or { println('ERROR: Failed to rename linux build') }
 
 // Build for windows
-sh('v -os windows .')
+sh('v -os windows -prod .')
 
 // Print version
 $if windows {
