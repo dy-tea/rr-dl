@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - 'main'
+      - '*'
 
 jobs:
   build:
@@ -16,13 +16,8 @@ jobs:
       - name: Install cross-compiler
         run: sudo apt install gcc-mingw-w64-x86-64
 
-      - name: Install V
-        run: |
-          git clone --depth=1 https://github.com/vlang/v
-          cd v
-          make
-          sudo ./v symlink
-          v up
+      - name: Setup V
+        uses: vlang/setup-v@v1.4
 
       - name: Build the project
         run: v run build.vsh
