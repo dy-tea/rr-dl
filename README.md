@@ -23,7 +23,7 @@ Options:
 ```
 
 ## About
-This is a downloader focused on downloading novels in the Markdown format. This makes it simple to read in apps like [Obsidian](https://obsidian.md). This allows for the original formatting of the text to be preserved because it is essentially just a renamed `html` file. The default file extension is `md` but can be changed to `html` if you want to use a browser to display the chapters (although not recommended).
+This is a downloader focused on downloading novels in the **Markdown** format. This makes it simple to read in apps like [Obsidian](https://obsidian.md). This allows for the original formatting of the text to be preserved because it is essentially just a renamed `html` file. The default file extension is `md` but can be changed to `html` if you want to use a browser to display the chapters (although it is not recommended).
 
 ## Examples
 Search for novel
@@ -31,23 +31,23 @@ Search for novel
 rr-dl
 ```
 
-Search for novels titled "test"
+Search for novels titled `test`
 ```
 rr-dl test
 ```
 
-Search for novels titled "test" and select all chapters for download
+Search for novels titled `test` and select all chapters for download
 ```
 rr-dl -a test
 ```
 
-Search for novels titled "test" and prefix chapter titles with index + 10
+Search for novels titled `test` and prefix chapter titles with index + 10
 ```
 rr-dl -I 10 test
 ```
 
 ## Building
-First install [V](https://vlang.io), then run the following commands (ensure you have added v to PATH using `v symlink`):
+First install the [V programming language](https://vlang.io), then run the following commands (ensure you have added v to PATH using `v symlink`):
 
 ```
 git clone https://github.com/dy-tea/rr-dl.git
