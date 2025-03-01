@@ -1,8 +1,8 @@
 #!/usr/bin/env -S v
 
 fn sh(cmd string) {
-  println('INFO: Running \'${cmd}\'')
-  print(execute_or_exit(cmd).output)
+	println('INFO: Running \'${cmd}\'')
+	print(execute_or_exit(cmd).output)
 }
 
 name := 'rr-dl'
@@ -22,7 +22,7 @@ sh('v -os windows -prod .')
 
 // Print version
 $if windows {
-  sh('.\\', windows_name + ' --version')
+	sh('.\\', windows_name + ' --version')
 } $else {
-  sh('./' + linux_name + ' --version')
+	sh('./' + linux_name + ' --version')
 }
