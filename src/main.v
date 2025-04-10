@@ -48,7 +48,7 @@ fn main() {
 
 	// Info
 	fp.application('rr-dl')
-	fp.version('1.2.6')
+	fp.version('1.2.7')
 	fp.description('A cli program for downloading novels from royalroad.com')
 	fp.skip_executable()
 
@@ -280,7 +280,7 @@ fn main() {
 		resp_chapter := http.get_text(chapter_link)
 
 		mut chapter_content := resp_chapter.find_between(r'<div class="chapter-inner chapter-content">',
-			r'<div class="portlet light t-center').trim_space().trim_string_right('</div>')
+			r'<div class="portlet light').trim_space().trim_string_right('</div>')
 
 		// Remove copy protection
 		mut replace_class := ''
@@ -298,10 +298,11 @@ fn main() {
 				println(term.bg_yellow('WARNING: Class "' + replace_class + '" not found'))
 				break
 			}
-			replace_class_end := chapter_content.index_after('</span>', replace_class_start)
-			replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
-			chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></span>',
-				'</p>')
+			if replace_class_end := chapter_content.index_after('</span>', replace_class_start) {
+				replace_class_str := chapter_content.substr(replace_class_start, replace_class_end)
+				chapter_content = chapter_content.replace(replace_class_str, '').replace('</p></span>',
+					'</p>')
+			}
 			break
 		}
 
